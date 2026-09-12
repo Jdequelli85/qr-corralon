@@ -1,1 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>QR Corralón</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #ffffff;
+      padding: 22px 20px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .sublogo {
+      font-size: 13px;
+      color: #777;
+      margin-top: 5px;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 25px 18px 40px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px 20px;
+      color: #666;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px 22px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .category {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #777;
+      margin-bottom: 8px;
+    }
+
+    .product-name {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .measure {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .color {
+      background: #f1f1f1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .price-box {
+      border-top: 1px solid #eee;
+      padding-top: 18px;
+      margin-top: 18px;
+    }
+
+    .price-label {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    .price {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .price-unit {
+      font-size: 13px;
+      color: #777;
+      margin-top: 2px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .info {
+      background: #f7f7f7;
+      border-radius: 10px;
+      padding: 13px;
+    }
+
+    .info-title {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .error {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .error h2 {
+      margin-bottom: 10px;
+    }
+
+    .error p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #999;
+      font-size: 11px;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="logo">QR CORRALÓN</div>
+    <div class="sublogo">Información del producto</div>
+  </header>
+
+  <main class="container">
+
+    <div id="loading" class="loading">
+      Consultando información del producto...
+    </div>
+
+    <div id="product" style="display:none;"></div>
+
+    <div id="error" style="display:none;"></div>
+
+  </main>
+
+  <script>
+
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbzhfaLJ2F-Rs0e50nMBNCYIToZ-RysALfsDVy4CamKoNRE_OBL1b18QLsFsYA50pJr5kQ/exec";
+
+    const parametros = new URLSearchParams(window.location.search);
+    const id = parametros.get("id");
+
+    function formatoPrecio(valor) {
+      return new Intl.NumberFormat("es-AR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(Number(valor));
+    }
+
+    async function cargarProducto() {
+
+      if (!id) {
+        mostrarError("No se indicó un producto.");
+        return;
+      }
+
+      try {
+
+        const respuesta = await fetch(
+          API_URL + "?id=" + encodeURIComponent(id)
+        );
+
+        const datos = await respuesta.json();
+
+        if (!datos.ok) {
+          mostrarError("No encontramos este producto.");
+          return;
+        }
+
+        mostrarProducto(datos.producto);
+
+      } catch (error) {
+
+        console.error(error);
+
+        mostrarError(
+          "No pudimos consultar la información. Intente nuevamente."
+        );
+      }
+    }
+
+
+    function mostrarProducto(p) {
+
+      document.getElementById("loading").style.display = "none";
+
+      const kgCaja = Number(p["Kg/Caja"]);
+
+      document.getElementById("product").innerHTML = `
+
+        <div class="card">
+
+          <div class="category">
+            Cerámico
+          </div>
+
+          <div class="product-name">
+            ${p["Producto"]}
+          </div>
+
+          <div class="measure">
+            ${p["Medida"]} cm
+          </div>
+
+          <div class="color">
+            <strong>Color:</strong> ${p["Color"]}
+          </div>
+
+
+          <div class="price-box">
+
+            <div class="price-label">
+              Precio contado
+            </div>
+
+            <div class="price">
+              $ ${formatoPrecio(p["Precio Contado"])}
+            </div>
+
+            <div class="price-unit">
+              por m²
+            </div>
+
+          </div>
+
+
+          <div class="price-box">
+
+            <div class="price-label">
+              Precio tarjeta
+            </div>
+
+            <div class="price">
+              $ ${formatoPrecio(p["Precio Tarjeta"])}
+            </div>
+
+            <div class="price-unit">
+              por m²
+            </div>
+
+          </div>
+
+
+          <div class="info-grid">
+
+            <div class="info">
+              <div class="info-title">
+                Rendimiento por caja
+              </div>
+
+              <div class="info-value">
+                ${p["Caja m²"]} m²
+              </div>
+            </div>
+
+
+            <div class="info">
+              <div class="info-title">
+                Peso por caja
+              </div>
+
+              <div class="info-value">
+                ${kgCaja.toFixed(2)} kg
+              </div>
+            </div>
+
+
+            <div class="info">
+              <div class="info-title">
+                Cajas por pallet
+              </div>
+
+              <div class="info-value">
+                ${p["Cj x pl"]}
+              </div>
+            </div>
+
+
+            <div class="info">
+              <div class="info-title">
+                Peso del pallet
+              </div>
+
+              <div class="info-value">
+                ${p["Kg/Pallet"]} kg
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="footer">
+          ID: ${p["ID"]}
+        </div>
+      `;
+
+      document.getElementById("product").style.display = "block";
+    }
+
+
+    function mostrarError(mensaje) {
+
+      document.getElementById("loading").style.display = "none";
+
+      document.getElementById("error").innerHTML = `
+        <div class="error">
+          <h2>Producto no disponible</h2>
+          <p>${mensaje}</p>
+        </div>
+      `;
+
+      document.getElementById("error").style.display = "block";
+    }
+
+
+    cargarProducto();
+
+  </script>
+
+</body>
+</html>
