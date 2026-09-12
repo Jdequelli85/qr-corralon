@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
   <meta charset="UTF-8">
@@ -9,6 +10,7 @@
 
   <title>G&T S.R.L. | Producto</title>
 
+
   <style>
 
     * {
@@ -17,12 +19,14 @@
       padding: 0;
     }
 
+
     body {
       font-family: Arial, Helvetica, sans-serif;
       background: #f3f3f3;
       color: #171717;
       min-height: 100vh;
     }
+
 
     /* =========================
        ENCABEZADO
@@ -35,6 +39,7 @@
       border-bottom: 1px solid #dddddd;
     }
 
+
     .logo {
       width: 210px;
       max-width: 75%;
@@ -42,6 +47,7 @@
       display: block;
       margin: 0 auto 8px;
     }
+
 
     .header-text {
       font-size: 13px;
@@ -145,7 +151,7 @@
     }
 
 
-    .card-price .price-title {
+    .box-price .price-title {
       background: #303236;
     }
 
@@ -182,6 +188,7 @@
       font-size: 13px;
       font-weight: 700;
       color: #555555;
+
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -219,9 +226,12 @@
 
     /* =========================
        WHATSAPP
+       OCULTO POR AHORA
     ========================= */
 
     .contact {
+      display: none;
+
       margin-top: 18px;
       background: #eaf7ef;
       border-radius: 15px;
@@ -355,13 +365,16 @@
         font-size: 27px;
       }
 
+
       .measure {
         font-size: 17px;
       }
 
+
       .price {
         font-size: 20px;
       }
+
 
       .prices {
         gap: 8px;
@@ -431,19 +444,12 @@
 
 
     /* =========================
-       WHATSAPP G&T
-    ========================= */
-
-    const WHATSAPP =
-      "5492995207382";
-
-
-    /* =========================
        OBTENER ID DEL QR
     ========================= */
 
     const parametros =
       new URLSearchParams(window.location.search);
+
 
     const id =
       parametros.get("id");
@@ -547,26 +553,29 @@
         .style.display = "none";
 
 
+      /* =========================
+         CÁLCULOS
+      ========================= */
+
       const kgCaja =
         Number(p["Kg/Caja"]);
 
 
-      const mensajeWhatsApp =
-        "Hola, quisiera consultar disponibilidad del producto " +
-        p["Producto"] +
-        ", medida " +
-        p["Medida"] +
-        " cm, color " +
-        p["Color"] +
-        ".";
+      const precioM2 =
+        Number(p["Precio Contado"]);
 
 
-      const whatsappURL =
-        "https://wa.me/" +
-        WHATSAPP +
-        "?text=" +
-        encodeURIComponent(mensajeWhatsApp);
+      const m2Caja =
+        Number(p["Caja m²"]);
 
+
+      const precioCaja =
+        precioM2 * m2Caja;
+
+
+      /* =========================
+         MOSTRAR FICHA
+      ========================= */
 
       document.getElementById("product")
         .innerHTML = `
@@ -598,10 +607,14 @@
           </div>
 
 
-          <!-- PRECIOS -->
+          <!-- =====================
+               PRECIOS
+          ====================== -->
 
           <div class="prices">
 
+
+            <!-- PRECIO POR M² -->
 
             <div class="price-card cash">
 
@@ -612,7 +625,7 @@
               <div class="price-content">
 
                 <div class="price">
-                  $ ${formatoPrecio(p["Precio Contado"])}
+                  $ ${formatoPrecio(precioM2)}
                 </div>
 
                 <div class="price-unit">
@@ -624,20 +637,22 @@
             </div>
 
 
-            <div class="price-card card-price">
+            <!-- PRECIO POR CAJA -->
+
+            <div class="price-card box-price">
 
               <div class="price-title">
-                Precio tarjeta
+                Precio por caja
               </div>
 
               <div class="price-content">
 
                 <div class="price">
-                  $ ${formatoPrecio(p["Precio Tarjeta"])}
+                  $ ${formatoPrecio(precioCaja)}
                 </div>
 
                 <div class="price-unit">
-                  por m²
+                  ${formatoNumero(m2Caja, 2)} m² por caja
                 </div>
 
               </div>
@@ -648,7 +663,9 @@
           </div>
 
 
-          <!-- INFORMACIÓN -->
+          <!-- =====================
+               INFORMACIÓN
+          ====================== -->
 
           <div class="section-title">
             Información de presentación
@@ -658,18 +675,22 @@
           <div class="info-grid">
 
 
+            <!-- CONTENIDO CAJA -->
+
             <div class="info">
 
               <div class="info-title">
-                Rendimiento por caja
+                Contenido por caja
               </div>
 
               <div class="info-value">
-                ${formatoNumero(p["Caja m²"], 2)} m²
+                ${formatoNumero(m2Caja, 2)} m²
               </div>
 
             </div>
 
+
+            <!-- PESO CAJA -->
 
             <div class="info">
 
@@ -684,6 +705,8 @@
             </div>
 
 
+            <!-- CAJAS PALLET -->
+
             <div class="info">
 
               <div class="info-title">
@@ -696,6 +719,8 @@
 
             </div>
 
+
+            <!-- PESO PALLET -->
 
             <div class="info">
 
@@ -713,9 +738,12 @@
           </div>
 
 
-          <!-- WHATSAPP -->
+          <!-- =====================
+               WHATSAPP
+               OCULTO
+          ====================== -->
 
-          <div class="contact" style="display:none;">
+          <div class="contact">
 
 
             <div class="contact-title">
@@ -732,28 +760,19 @@
             </div>
 
 
-            <a
-              class="whatsapp-button"
-              href="${whatsappURL}"
-              target="_blank"
-              rel="noopener"
-            >
-
-              💬 Consultar por WhatsApp
-
-            </a>
-
-
           </div>
 
 
-          <!-- MENSAJE -->
+          <!-- =====================
+               MENSAJE FINAL
+          ====================== -->
 
           <div class="message">
 
             <div class="message-title">
               Gracias por confiar en nosotros.
             </div>
+
 
             <div class="message-text">
 
@@ -770,11 +789,11 @@
         </div>
 
 
+        <!-- PIE -->
+
         <div class="footer">
 
           G&T S.R.L. · Materiales de Construcción.
-          <br>
-          WhatsApp: 299 520 7382
 
         </div>
 
