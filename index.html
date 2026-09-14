@@ -120,70 +120,61 @@
 
 
     /* =========================
-       PRECIOS / OFERTA
+       PRECIOS
     ========================= */
 
     .prices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
       margin-top: 5px;
     }
 
-    .offer {
-      border: 2px solid #c00000;
-      border-radius: 14px;
+
+    .price-card {
+      border-radius: 12px;
       overflow: hidden;
-      background: #fff8f8;
+      background: #f5f5f5;
     }
 
-    .offer-title {
-      background: #c00000;
+
+    .price-title {
+      padding: 9px 10px;
       color: #ffffff;
-      padding: 10px 12px;
-      font-size: 16px;
-      font-weight: 800;
-      text-align: center;
-      letter-spacing: 0.5px;
-    }
-
-    .offer-content {
-      padding: 14px 12px 16px;
-      text-align: center;
-    }
-
-    .offer-price {
-      font-size: 30px;
-      font-weight: 900;
-      color: #c00000;
-      line-height: 1.1;
-    }
-
-    .offer-unit {
       font-size: 13px;
-      color: #666666;
+      font-weight: 700;
+    }
+
+
+    .cash .price-title {
+      background: #c00000;
+    }
+
+
+    .box-price .price-title {
+      background: #303236;
+    }
+
+
+    .price-content {
+      padding: 14px 11px 15px;
+    }
+
+
+    .price {
+      font-size: 23px;
+      font-weight: 800;
+      white-space: nowrap;
+      color: #111111;
+    }
+
+
+    .price-unit {
+      font-size: 12px;
+      color: #777777;
       margin-top: 3px;
     }
 
-    .offer-normal {
-      margin-top: 9px;
-      font-size: 13px;
-      color: #777777;
-    }
-
-    .offer-normal strong {
-      color: #444444;
-    }
-
-    .offer-box {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #e3caca;
-      font-size: 18px;
-      font-weight: 800;
-      color: #333333;
-    }
-
-    .offer-box strong {
-      color: #c00000;
-    }
 
     /* =========================
        INFORMACIÓN
@@ -418,15 +409,7 @@
 
 
       .prices {
-        width: 100%;
-      }
-
-      .offer-price {
-        font-size: 27px;
-      }
-
-      .offer-box {
-        font-size: 17px;
+        gap: 8px;
       }
 
     }
@@ -615,7 +598,7 @@
         Number(p["Kg/Caja"]);
 
 
-      const precioHabitual =
+      const precioM2 =
         Number(p["Precio Contado"]);
 
 
@@ -626,7 +609,6 @@
       const valorOferta =
         p["OFERTA"];
 
-
       const tieneOferta =
         valorOferta !== "" &&
         valorOferta !== null &&
@@ -634,104 +616,13 @@
         !isNaN(Number(valorOferta)) &&
         Number(valorOferta) > 0;
 
-
-      const precioOferta =
+      const precioMostrar =
         tieneOferta
           ? Number(valorOferta)
-          : precioHabitual;
+          : precioM2;
 
-
-      const precioCajaOferta =
-        precioOferta * m2Caja;
-
-
-      /* =========================
-         BLOQUE DE PRECIOS
-      ========================= */
-
-      const bloquePrecios =
-        tieneOferta
-          ? `
-            <div class="prices">
-
-              <div class="price-card cash">
-                <div class="price-title">
-                  🔥 OFERTA
-                </div>
-
-                <div class="price-content">
-                  <div class="price">
-                    $ ${formatoPrecio(precioOferta)}
-                  </div>
-
-                  <div class="price-unit">
-                    por m²
-                  </div>
-
-                  <div class="offer-normal">
-                    Precio habitual:
-                    <strong>
-                      $ ${formatoPrecio(precioHabitual)} /m²
-                    </strong>
-                  </div>
-                </div>
-              </div>
-
-              <div class="price-card box-price">
-                <div class="price-title">
-                  Precio por caja
-                </div>
-
-                <div class="price-content">
-                  <div class="price">
-                    $ ${formatoPrecio(precioCajaOferta)}
-                  </div>
-
-                  <div class="price-unit">
-                    ${formatoNumero(m2Caja, 2)} m² por caja
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          `
-          : `
-            <div class="prices">
-
-              <div class="price-card cash">
-                <div class="price-title">
-                  Precio contado
-                </div>
-
-                <div class="price-content">
-                  <div class="price">
-                    $ ${formatoPrecio(precioHabitual)}
-                  </div>
-
-                  <div class="price-unit">
-                    por m²
-                  </div>
-                </div>
-              </div>
-
-              <div class="price-card box-price">
-                <div class="price-title">
-                  Precio por caja
-                </div>
-
-                <div class="price-content">
-                  <div class="price">
-                    $ ${formatoPrecio(precioHabitual * m2Caja)}
-                  </div>
-
-                  <div class="price-unit">
-                    ${formatoNumero(m2Caja, 2)} m² por caja
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          `;
+      const precioCaja =
+        precioMostrar * m2Caja;
 
 
       /* =========================
@@ -769,10 +660,73 @@
 
 
           <!-- =====================
-               PRECIOS / OFERTA
-           ====================== -->
+               PRECIOS
+          ====================== -->
 
-          ${bloquePrecios}
+          <div class="prices">
+
+
+            <!-- PRECIO POR M² -->
+
+            <div class="price-card cash">
+
+              <div class="price-title">
+                ${tieneOferta ? "🔥 OFERTA" : "Precio contado"}
+              </div>
+
+              <div class="price-content">
+
+                <div class="price">
+                  $ ${formatoPrecio(precioMostrar)}
+                </div>
+
+                <div class="price-unit">
+                  por m²
+                </div>
+
+                ${
+                  tieneOferta
+                    ? `
+                      <div style="margin-top: 7px; font-size: 11px; color: #777777;">
+                        Precio habitual:
+                        <strong style="color: #444444;">
+                          $ ${formatoPrecio(precioM2)} /m²
+                        </strong>
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            </div>
+
+
+            <!-- PRECIO POR CAJA -->
+
+            <div class="price-card box-price">
+
+              <div class="price-title">
+                Precio por caja
+              </div>
+
+              <div class="price-content">
+
+                <div class="price">
+                  $ ${formatoPrecio(precioCaja)}
+                </div>
+
+                <div class="price-unit">
+                  ${formatoNumero(m2Caja, 2)} m² por caja
+                </div>
+
+              </div>
+
+            </div>
+
+
+          </div>
+
 
 
           <!-- =====================
