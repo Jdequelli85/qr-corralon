@@ -606,6 +606,31 @@
         Number(p["Caja m²"]);
 
 
+      /* =========================
+         CATEGORÍA SEGÚN PREFIJO DEL ID
+      ========================= */
+
+      const idProducto =
+        String(p["ID"] || "").trim().toUpperCase();
+
+      const prefijoCategoria =
+        idProducto.substring(0, 4);
+
+      const categorias = {
+        "CER-": "Cerámico",
+        "POR-": "Porcelanato",
+        "REV-": "Revestimiento",
+        "PSO-": "Piso"
+      };
+
+      const categoria =
+        categorias[prefijoCategoria] || "Producto";
+
+
+      /* =========================
+         OFERTA
+      ========================= */
+
       const valorOferta =
         p["OFERTA"];
 
@@ -639,7 +664,7 @@
           <!-- PRODUCTO -->
 
           <div class="category">
-            Cerámico
+            ${categoria}
           </div>
 
 
