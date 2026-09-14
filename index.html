@@ -641,8 +641,99 @@
           : precioHabitual;
 
 
-      const precioCajaOferta =
+      const precioCaja =
         precioOferta * m2Caja;
+
+
+      /* =========================
+         MOSTRAR FICHA
+      ========================= */
+
+      const bloquePrecios =
+        tieneOferta
+          ? `
+            <div class="prices">
+
+              <div class="offer">
+
+                <div class="offer-title">
+                  🔥 OFERTA
+                </div>
+
+                <div class="offer-content">
+
+                  <div class="offer-price">
+                    $ ${formatoPrecio(precioOferta)}
+                  </div>
+
+                  <div class="offer-unit">
+                    por m²
+                  </div>
+
+                  <div class="offer-normal">
+                    Precio habitual:
+                    <strong>
+                      $ ${formatoPrecio(precioHabitual)} /m²
+                    </strong>
+                  </div>
+
+                  <div class="offer-box">
+                    Precio por caja:
+                    <strong>
+                      $ ${formatoPrecio(precioCaja)}
+                    </strong>
+
+                    <br>
+
+                    <span class="offer-unit">
+                      ${formatoNumero(m2Caja, 2)} m² por caja
+                    </span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          `
+          : `
+            <div class="prices">
+
+              <div class="offer" style="border: 1px solid #dddddd; background: #ffffff;">
+
+                <div class="offer-title" style="background: #333333;">
+                  Precio contado
+                </div>
+
+                <div class="offer-content">
+
+                  <div class="offer-price" style="color: #111111;">
+                    $ ${formatoPrecio(precioHabitual)}
+                  </div>
+
+                  <div class="offer-unit">
+                    por m²
+                  </div>
+
+                  <div class="offer-box" style="border-top: 1px solid #eeeeee;">
+                    Precio por caja:
+                    <strong style="color: #111111;">
+                      $ ${formatoPrecio(precioCaja)}
+                    </strong>
+
+                    <br>
+
+                    <span class="offer-unit">
+                      ${formatoNumero(m2Caja, 2)} m² por caja
+                    </span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          `;
 
 
       /* =========================
@@ -683,49 +774,7 @@
                PRECIOS / OFERTA
            ====================== -->
 
-          <div class="prices">
-
-            <div class="offer">
-
-              <div class="offer-title">
-                🔥 OFERTA
-              </div>
-
-              <div class="offer-content">
-
-                <div class="offer-price">
-                  $ ${formatoPrecio(precioOferta)}
-                </div>
-
-                <div class="offer-unit">
-                  por m²
-                </div>
-
-                <div class="offer-normal">
-                  Precio habitual:
-                  <strong>
-                    $ ${formatoPrecio(precioHabitual)} /m²
-                  </strong>
-                </div>
-
-                <div class="offer-box">
-                  Precio por caja:
-                  <strong>
-                    $ ${formatoPrecio(precioCajaOferta)}
-                  </strong>
-
-                  <br>
-
-                  <span class="offer-unit">
-                    ${formatoNumero(m2Caja, 2)} m² por caja
-                  </span>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
+          ${bloquePrecios}
 
 
           <!-- =====================
