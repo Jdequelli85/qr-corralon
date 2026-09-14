@@ -641,12 +641,12 @@
           : precioHabitual;
 
 
-      const precioCaja =
+      const precioCajaOferta =
         precioOferta * m2Caja;
 
 
       /* =========================
-         MOSTRAR FICHA
+         BLOQUE DE PRECIOS
       ========================= */
 
       const bloquePrecios =
@@ -654,19 +654,17 @@
           ? `
             <div class="prices">
 
-              <div class="offer">
-
-                <div class="offer-title">
+              <div class="price-card cash">
+                <div class="price-title">
                   🔥 OFERTA
                 </div>
 
-                <div class="offer-content">
-
-                  <div class="offer-price">
+                <div class="price-content">
+                  <div class="price">
                     $ ${formatoPrecio(precioOferta)}
                   </div>
 
-                  <div class="offer-unit">
+                  <div class="price-unit">
                     por m²
                   </div>
 
@@ -676,22 +674,23 @@
                       $ ${formatoPrecio(precioHabitual)} /m²
                     </strong>
                   </div>
+                </div>
+              </div>
 
-                  <div class="offer-box">
-                    Precio por caja:
-                    <strong>
-                      $ ${formatoPrecio(precioCaja)}
-                    </strong>
-
-                    <br>
-
-                    <span class="offer-unit">
-                      ${formatoNumero(m2Caja, 2)} m² por caja
-                    </span>
-                  </div>
-
+              <div class="price-card box-price">
+                <div class="price-title">
+                  Precio por caja
                 </div>
 
+                <div class="price-content">
+                  <div class="price">
+                    $ ${formatoPrecio(precioCajaOferta)}
+                  </div>
+
+                  <div class="price-unit">
+                    ${formatoNumero(m2Caja, 2)} m² por caja
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -699,37 +698,36 @@
           : `
             <div class="prices">
 
-              <div class="offer" style="border: 1px solid #dddddd; background: #ffffff;">
-
-                <div class="offer-title" style="background: #333333;">
+              <div class="price-card cash">
+                <div class="price-title">
                   Precio contado
                 </div>
 
-                <div class="offer-content">
-
-                  <div class="offer-price" style="color: #111111;">
+                <div class="price-content">
+                  <div class="price">
                     $ ${formatoPrecio(precioHabitual)}
                   </div>
 
-                  <div class="offer-unit">
+                  <div class="price-unit">
                     por m²
                   </div>
+                </div>
+              </div>
 
-                  <div class="offer-box" style="border-top: 1px solid #eeeeee;">
-                    Precio por caja:
-                    <strong style="color: #111111;">
-                      $ ${formatoPrecio(precioCaja)}
-                    </strong>
-
-                    <br>
-
-                    <span class="offer-unit">
-                      ${formatoNumero(m2Caja, 2)} m² por caja
-                    </span>
-                  </div>
-
+              <div class="price-card box-price">
+                <div class="price-title">
+                  Precio por caja
                 </div>
 
+                <div class="price-content">
+                  <div class="price">
+                    $ ${formatoPrecio(precioHabitual * m2Caja)}
+                  </div>
+
+                  <div class="price-unit">
+                    ${formatoNumero(m2Caja, 2)} m² por caja
+                  </div>
+                </div>
               </div>
 
             </div>
