@@ -891,7 +891,7 @@
         <div class="card">
 
           <div class="category">
-            ${esPastina ? "Pastina" : categoria}
+            PRODUCTO
           </div>
 
           <div class="product-name">
@@ -910,14 +910,7 @@
                   ${p["Color"]}
                 </div>
               `
-              : esPastina
-                ? `
-                  <div class="color">
-                    <strong>Color:</strong>
-                    ${p["Color"] || "—"}
-                  </div>
-                `
-                : ""
+              : ""
           }
 
           ${bloquePrecios}
