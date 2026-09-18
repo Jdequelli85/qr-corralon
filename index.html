@@ -618,10 +618,13 @@
         "POR-": "Porcelanato",
         "REV-": "Revestimiento",
         "PSO-": "Piso",
-        "CRRL-": "Material de corralón"
+        "CRRL-": "Producto"
       };
 
-      const categoria = categorias[prefijoCategoria] || "Producto";
+      const categoria =
+        esPastina
+          ? "Producto"
+          : (categorias[prefijoCategoria] || "Producto");
 
       /* =========================
          OFERTA
@@ -891,7 +894,7 @@
         <div class="card">
 
           <div class="category">
-            PRODUCTO
+            ${categoria}
           </div>
 
           <div class="product-name">
