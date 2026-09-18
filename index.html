@@ -585,54 +585,49 @@
 
     function mostrarProducto(p) {
 
-
-      document.getElementById("loading")
-        .style.display = "none";
-
+      document.getElementById("loading").style.display = "none";
 
       /* =========================
          CÁLCULOS
       ========================= */
 
-      const kgCaja =
-        Number(p["Kg/Caja"]);
-
-
-      const precioM2 =
-        Number(p["Precio Contado"]);
-
-
-      const m2Caja =
-        Number(p["Caja m²"]);
-
+      const kgCaja = Number(p["Kg/Caja"]);
+      const precioM2 = Number(p["Precio Contado"]);
+      const m2Caja = Number(p["Caja m²"]);
 
       /* =========================
-         CATEGORÍA SEGÚN PREFIJO DEL ID
+         CATEGORÍA SEGÚN PREFIJO
       ========================= */
 
-      const idProducto =
-        String(p["ID"] || "").trim().toUpperCase();
+      const idProducto = String(p["ID"] || "").trim().toUpperCase();
+      const prefijoCategoria = idProducto.substring(0, 4);
 
-      const prefijoCategoria =
-        idProducto.substring(0, 4);
+      const esCRRL = idProducto.indexOf("CRRL-") === 0;
+
+      /*
+         PSO- normalmente corresponde a productos para piso.
+         Si comienza con PSO- pero NO tiene Medida,
+         se considera PASTINA.
+      */
+      const esPastina =
+        prefijoCategoria === "PSO-" &&
+        String(p["Medida"] || "").trim() === "";
 
       const categorias = {
         "CER-": "Cerámico",
         "POR-": "Porcelanato",
         "REV-": "Revestimiento",
-        "PSO-": "Piso"
+        "PSO-": "Piso",
+        "CRRL-": "Material de corralón"
       };
 
-      const categoria =
-        categorias[prefijoCategoria] || "Producto";
-
+      const categoria = categorias[prefijoCategoria] || "Producto";
 
       /* =========================
          OFERTA
       ========================= */
 
-      const valorOferta =
-        p["OFERTA"];
+      const valorOferta = p["OFERTA"];
 
       const tieneOferta =
         valorOferta !== "" &&
@@ -646,52 +641,60 @@
           ? Number(valorOferta)
           : precioM2;
 
-      const precioCaja =
-        precioMostrar * m2Caja;
-
-
       /* =========================
-         MOSTRAR FICHA
+         PRECIOS
       ========================= */
 
-      document.getElementById("product")
-        .innerHTML = `
+      let bloquePrecios = "";
 
+      if (esCRRL || esPastina) {
 
-        <div class="card">
+        bloquePrecios = `
+          <div class="prices" style="grid-template-columns: 1fr;">
 
+            <div class="price-card cash">
 
-          <!-- PRODUCTO -->
+              <div class="price-title">
+                ${tieneOferta ? "🔥 OFERTA" : "Precio contado"}
+              </div>
 
-          <div class="category">
-            ${categoria}
+              <div class="price-content">
+
+                <div class="price">
+                  $ ${formatoPrecio(precioMostrar)}
+                </div>
+
+                <div class="price-unit">
+                  por unidad
+                </div>
+
+                ${
+                  tieneOferta
+                    ? `
+                      <div style="margin-top: 7px; font-size: 11px; color: #777777;">
+                        Precio habitual:
+                        <strong style="color: #444444;">
+                          $ ${formatoPrecio(precioM2)} /unidad
+                        </strong>
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            </div>
+
           </div>
+        `;
 
+      } else {
 
-          <div class="product-name">
-            ${p["Producto"]}
-          </div>
+        const precioCaja =
+          precioMostrar * m2Caja;
 
-
-          <div class="measure">
-            ${p["Medida"]} cm
-          </div>
-
-
-          <div class="color">
-            <strong>Color:</strong>
-            ${p["Color"]}
-          </div>
-
-
-          <!-- =====================
-               PRECIOS
-          ====================== -->
-
+        bloquePrecios = `
           <div class="prices">
-
-
-            <!-- PRECIO POR M² -->
 
             <div class="price-card cash">
 
@@ -726,9 +729,6 @@
 
             </div>
 
-
-            <!-- PRECIO POR CAJA -->
-
             <div class="price-card box-price">
 
               <div class="price-title">
@@ -749,24 +749,85 @@
 
             </div>
 
+          </div>
+        `;
+
+      }
+
+      /* =========================
+         INFORMACIÓN
+      ========================= */
+
+      let bloqueInformacion = "";
+
+      if (esCRRL) {
+
+        /*
+           CRRL-:
+           No mostrar información adicional.
+        */
+
+        bloqueInformacion = "";
+
+      } else if (esPastina) {
+
+        /*
+           PASTINA:
+           El dato "Caja m²" se utiliza como superficie
+           aproximada de cobertura.
+        */
+
+        bloqueInformacion = `
+          <div class="section-title">
+            Información del producto
+          </div>
+
+          <div class="info-grid">
+
+            <div class="info">
+
+              <div class="info-title">
+                Color
+              </div>
+
+              <div class="info-value">
+                ${p["Color"] || "—"}
+              </div>
+
+            </div>
+
+            <div class="info">
+
+              <div class="info-title">
+                Superficie aproximada
+              </div>
+
+              <div class="info-value">
+                ${p["Caja m²"] ? formatoNumero(m2Caja, 2) + " m²" : "—"}
+              </div>
+
+            </div>
 
           </div>
 
+          <div style="margin-top: 10px; font-size: 11px; color: #777777; line-height: 1.4;">
+            El rendimiento es aproximado y puede variar según el tamaño de la junta.
+          </div>
+        `;
 
+      } else {
 
-          <!-- =====================
-               INFORMACIÓN
-          ====================== -->
+        /*
+           CER / POR / REV / PSO con medida:
+           Mantener comportamiento actual.
+        */
 
+        bloqueInformacion = `
           <div class="section-title">
             Información de presentación
           </div>
 
-
           <div class="info-grid">
-
-
-            <!-- CONTENIDO CAJA -->
 
             <div class="info">
 
@@ -780,9 +841,6 @@
 
             </div>
 
-
-            <!-- PESO CAJA -->
-
             <div class="info">
 
               <div class="info-title">
@@ -794,9 +852,6 @@
               </div>
 
             </div>
-
-
-            <!-- CAJAS PALLET -->
 
             <div class="info">
 
@@ -810,9 +865,6 @@
 
             </div>
 
-
-            <!-- PESO PALLET -->
-
             <div class="info">
 
               <div class="info-title">
@@ -825,38 +877,66 @@
 
             </div>
 
+          </div>
+        `;
 
+      }
+
+      /* =========================
+         MOSTRAR FICHA
+      ========================= */
+
+      document.getElementById("product").innerHTML = `
+
+        <div class="card">
+
+          <div class="category">
+            ${esPastina ? "Pastina" : categoria}
           </div>
 
+          <div class="product-name">
+            ${p["Producto"]}
+          </div>
 
-          <!-- =====================
-               WHATSAPP
-               OCULTO
-          ====================== -->
+          ${
+            !esCRRL && !esPastina
+              ? `
+                <div class="measure">
+                  ${p["Medida"]} cm
+                </div>
+
+                <div class="color">
+                  <strong>Color:</strong>
+                  ${p["Color"]}
+                </div>
+              `
+              : esPastina
+                ? `
+                  <div class="color">
+                    <strong>Color:</strong>
+                    ${p["Color"] || "—"}
+                  </div>
+                `
+                : ""
+          }
+
+          ${bloquePrecios}
+
+          ${bloqueInformacion}
 
           <div class="contact">
-
 
             <div class="contact-title">
               ¿Necesitás consultar disponibilidad?
             </div>
 
-
             <div class="contact-text">
-
               Estamos para ayudarte.
               Comunicate con nosotros por WhatsApp
               y te asesoramos con gusto.
-
             </div>
 
-
           </div>
-
-
-          <!-- =====================
-               MENSAJE FINAL
-          ====================== -->
 
           <div class="message">
 
@@ -864,36 +944,24 @@
               Gracias por confiar en nosotros.
             </div>
 
-
             <div class="message-text">
-
               En G&T S.R.L. te acompañamos
               en cada etapa de tu proyecto.
               <br>
               ¡Estamos a tu servicio!
-
             </div>
 
           </div>
 
-
         </div>
-
-
-        <!-- PIE -->
 
         <div class="footer">
-
           G&T S.R.L. · Materiales de Construcción.
-
         </div>
-
 
       `;
 
-
-      document.getElementById("product")
-        .style.display = "block";
+      document.getElementById("product").style.display = "block";
 
     }
 
